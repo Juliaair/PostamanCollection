@@ -1,0 +1,694 @@
+{
+	"info": {
+		"_postman_id": "a6f269ba-d996-41e7-9098-4a9b4e6507ff",
+		"name": "Hw Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "9971868",
+		"_collection_link": "https://winter-crater-2019.postman.co/workspace/QA-practice~c39450cd-8ddf-4d50-9425-a8f0f0de3dc0/collection/9971868-a6f269ba-d996-41e7-9098-4a9b4e6507ff?action=share&source=collection_link&creator=9971868"
+	},
+	"item": [
+		{
+			"name": "Validation checks",
+			"item": [
+				{
+					"name": "repeat password validation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Repeat Password Validation\", function () {",
+									"    pm.response.to.have.status(400); ",
+									"    pm.response.to.have.jsonBody(\"message\", \"Passwords do not match\"); ",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Yuliia\",\n  \"lastName\": \"Cuprova\",\n  \"email\": \"test.ch@gmail.com\",\n  \"password\": \"Qwerty12345\",\n  \"repeatPassword\": \"MismatchedPassword\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://qauto.forstudy.space/api/auth/signup"
+					},
+					"response": []
+				},
+				{
+					"name": "password validation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Invalid Password Validation\", function () {",
+									"    pm.response.to.have.status(400); ",
+									"    pm.response.to.have.jsonBody(\"message\", \"Password has to be from 8 to 15 characters long and contain at least one integer, one capital, and one small letter\"); ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Yuliia\",\n  \"lastName\": \"Cuprova\",\n  \"email\": \"test.ch@gmail.com\",\n  \"password\": \"short\",\n  \"repeatPassword\": \"short\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://qauto.forstudy.space/api/auth/signup"
+					},
+					"response": []
+				},
+				{
+					"name": "email validation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Invalid Email Validation\", function () {",
+									"    pm.response.to.have.status(400); ",
+									"    pm.response.to.have.jsonBody(\"message\", \"Email is incorrect\"); ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Yuliia\",\n  \"lastName\": \"Cuprova\",\n  \"email\": \"invalid_email\",\n  \"password\": \"Qwerty12345\",\n  \"repeatPassword\": \"Qwerty12345\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://qauto.forstudy.space/api/auth/signup"
+					},
+					"response": []
+				},
+				{
+					"name": "name (empty) validation",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Empty Name Validation\", function () {",
+									"    pm.response.to.have.status(400); ",
+									"    pm.response.to.have.jsonBody(\"message\", '\"name\" is not allowed to be empty'); ",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"\",\n  \"lastName\": \"Cuprova\",\n  \"email\": \"test.ch@gmail.com\",\n  \"password\": \"Qwerty12345\",\n  \"repeatPassword\": \"Qwerty12345\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "https://qauto.forstudy.space/api/auth/signup"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "signup",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Статус код должен быть 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Получение и сохранение ID пользователя\", function () {",
+							"    pm.expect(jsonData).to.have.property(\"status\", \"ok\");",
+							"    pm.expect(jsonData.data).to.have.property(\"userId\");",
+							"",
+							"    pm.variables.set(\"userId\", jsonData.data.userId);",
+							"});",
+							"pm.test(\"Повинно відповідати JSON Schema\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    var schema = {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"status\": { \"type\": \"string\" },",
+							"        },",
+							"        \"required\": [\"status\"]",
+							"    };",
+							"",
+							"    pm.expect(tv4.validate(jsonData, schema)).to.be.true;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Генерация уникального email и установка в переменную окружения",
+							"pm.variables.set(\"uniqueEmail\", \"test\" + Math.floor(Math.random() * 10000) + \"@gmail.com\");",
+							"pm.variables.set(\"userPassword\", \"Qwerty12345\");",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Yuliia\",\n  \"lastName\": \"Cuprova\",\n  \"email\": \"{{uniqueEmail}}\",\n  \"password\": \"Qwerty12345\",\n  \"repeatPassword\": \"Qwerty12345\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "https://qauto.forstudy.space/api/auth/signup"
+			},
+			"response": []
+		},
+		{
+			"name": "User profile",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "https://qauto.forstudy.space/api/users/profile"
+			},
+			"response": []
+		},
+		{
+			"name": "Edit profile",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							"var timestamp = new Date().getTime();",
+							"",
+							"var photoObject = {",
+							"    filename: \"user-\" + timestamp + \".jpg\",",
+							"};",
+							"",
+							"var photoString = JSON.stringify(photoObject);",
+							"",
+							"pm.variables.set(\"photoObject\", photoObject);",
+							"pm.variables.set(\"photoString\", photoString);",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"var userId = pm.variables.get(\"userId\");",
+							"",
+							"var requestData = {",
+							"    \"photo\": \"user-1621352948859.jpg\",",
+							"    \"name\": \"John\",",
+							"    \"lastName\": \"Dou\",",
+							"    \"dateBirth\": \"{{dynamicDateOfBirth}}\",",
+							"    \"country\": \"Ukraine\"",
+							"};",
+							"",
+							"pm.sendRequest({",
+							"    method: 'PUT',",
+							"    url: `https://qauto.forstudy.space/api/users/${userId}/profile`,",
+							"    header: {",
+							"        'Content-Type': 'application/json',",
+							"        'Authorization': 'Bearer ' + pm.environment.get('access_token') ",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify(requestData)",
+							"    }",
+							"}, function (error, response) {",
+							"    pm.test(\"Статус код должен быть 200\", function () {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"",
+							"    pm.test(\"Поле 'status' должно быть 'ok'\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData).to.have.property(\"status\", \"ok\");",
+							"    });",
+							"",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"photo\": {{photoString}},\n    \"name\": \"John\",\n    \"lastName\": \"Dou\",\n    \"dateBirth\": \"{{dynamicDateOfBirth}}\",\n    \"country\": \"Ukraine\"\n}\n\n\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "https://qauto.forstudy.space/api/users/profile"
+			},
+			"response": []
+		},
+		{
+			"name": "Create car",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({",
+							"    url: 'https://qauto.forstudy.space/api/cars',",
+							"    method: 'POST',",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({",
+							"            \"carBrandId\": 1,",
+							"            \"carModelId\": 3,",
+							"            \"mileage\": 100",
+							"        })",
+							"    },",
+							"    headers: {",
+							"        'Content-Type': 'application/json'",
+							"    }",
+							"}, function (err, res) {",
+							"    if (err || !res || !res.json || !res.json()) {",
+							"        console.error(\"Failed to create a car:\", err || res);",
+							"    } else {",
+							"        var jsonData = res.json();",
+							"        if (jsonData.status === \"success\" && jsonData.data && jsonData.data.id) {",
+							"            pm.environment.set(\"carId\", jsonData.data.id);",
+							"            pm.environment.set(\"carMileage\", jsonData.data.mileage);",
+							"            console.log(\"carId set to:\", jsonData.data.id);",
+							"        } else {",
+							"            console.error(\"Failed to create a car. Response:\", jsonData);",
+							"        }",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"carBrandId\": 1,\n  \"carModelId\": 3,\n  \"mileage\": 100\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "https://qauto.forstudy.space/api/cars"
+			},
+			"response": []
+		},
+		{
+			"name": "Create expenses",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Check status code and mileage\", function () {",
+							"    pm.response.to.have.status(200);",
+							"",
+							"    if (typeof mileageInExpenses === \"number\") {",
+							"        const carMileage = parseFloat(pm.environment.get(\"carMileage\"));",
+							"        pm.expect(mileageInExpenses).to.be.at.least(carMileage);",
+							"    } else {",
+							"        console.warn(\"Mileage in expenses is not a number. Skipping mileage check.\");",
+							"    }",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"carId\": {{carId}},\n  \"reportedAt\": \"2023-12-16\",\n  \"mileage\": 157,\n  \"liters\": 20,\n  \"totalCost\": 11,\n  \"forceMileage\": false\n}\n\n\n\n\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "https://qauto.forstudy.space/api/expenses"
+			},
+			"response": []
+		},
+		{
+			"name": "Change users password",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Pre-request script",
+							"pm.variables.set(\"uniqueEmail\", \"test\" + Math.floor(Math.random() * 10000) + \"@gmail.com\");",
+							"",
+							"pm.sendRequest({",
+							"    url: 'https://qauto.forstudy.space/api/auth/signup',",
+							"    method: 'POST',",
+							"    header: 'Content-Type:application/json',",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({",
+							"            \"name\": \"Yuliia\",",
+							"            \"lastName\": \"Cuprova\",",
+							"            \"email\": pm.variables.get(\"uniqueEmail\"),",
+							"            \"password\": \"Qwerty12345\",",
+							"            \"repeatPassword\": \"Qwerty12345\"",
+							"        })",
+							"    }",
+							"}, function (err, res) {",
+							"    if (err) {",
+							"        console.error(\"Error creating user:\", err);",
+							"    } else {",
+							"        var jsonData = res.json();",
+							"        pm.variables.set(\"userId\", jsonData.userId);",
+							"        pm.variables.set(\"userPassword\", \"Qwerty12345\");",
+							"        console.log(\"User created successfully\");",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test script",
+							"pm.test(\"Password Change Test\", function () {",
+							"    // Wait for the user creation request to complete",
+							"    pm.expect(pm.variables.has(\"userId\")).to.be.true;",
+							"",
+							"    // Password change request",
+							"    pm.sendRequest({",
+							"        url: 'https://qauto.forstudy.space/api/users/password',",
+							"        method: 'PUT',",
+							"        header: 'Content-Type:application/json',",
+							"        body: {",
+							"            mode: 'raw',",
+							"            raw: JSON.stringify({",
+							"                \"oldPassword\": pm.variables.get(\"userPassword\"),",
+							"                \"password\": \"NewPassword11\",",
+							"                \"repeatPassword\": \"NewPassword11\"",
+							"            })",
+							"        }",
+							"    }, function (err, res) {",
+							"        if (err) {",
+							"            console.error(\"Error changing password:\", err);",
+							"        } else {",
+							"            var jsonData = res.json();",
+							"            pm.expect(jsonData.userId).to.equal(pm.variables.get(\"userId\"));",
+							"            console.log(\"Password changed successfully\");",
+							"        }",
+							"    });",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"oldPassword\": \"{{userPassword}}\",\n  \"password\": \"NewPassword11\",\n  \"repeatPassword\": \"NewPassword11\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "https://qauto.forstudy.space/api/users/password"
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Login Test - Successful\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.sendRequest({",
+							"    url: 'https://qauto.forstudy.space/api/auth/signin',",
+							"    method: 'POST',",
+							"    header: {",
+							"        'Content-Type': 'application/json'",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({",
+							"            \"email\": pm.variables.get(\"uniqueEmail\"),",
+							"            \"password\": pm.variables.get(\"userPassword\"),",
+							"            \"remember\": false",
+							"        })",
+							"    }",
+							"}, function (err, res) {",
+							"    if (err) {",
+							"        console.error(\"Ошибка при входе:\", err);",
+							"    } else {",
+							"        console.log(\"Вход выполнен успешно\");",
+							"    }",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.variables.set(\"uniqueEmail\", \"test\" + Math.floor(Math.random() * 10000) + \"@gmail.com\");",
+							"",
+							"pm.sendRequest({",
+							"    url: 'https://qauto.forstudy.space/api/auth/signup',",
+							"    method: 'POST',",
+							"    header: {",
+							"        'Content-Type': 'application/json'",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({",
+							"            \"name\": \"Yuliia\",",
+							"            \"lastName\": \"Cuprova\",",
+							"            \"email\": pm.variables.get(\"uniqueEmail\"),",
+							"            \"password\": \"Qwerty12345\",",
+							"            \"repeatPassword\": \"Qwerty12345\"",
+							"        })",
+							"    }",
+							"}, function (err, res) {",
+							"    if (err) {",
+							"        console.error(\"Ошибка при создании аккаунта:\", err);",
+							"    } else {",
+							"        var jsonData = res.json();",
+							"        pm.variables.set(\"userPassword\", \"Qwerty12345\");",
+							"        console.log(\"Аккаунт успешно создан\");",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{uniqueEmail}}\",\n  \"password\": \"{{userPassword}}\",\n  \"remember\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "https://qauto.forstudy.space/api/auth/signin"
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Логаут",
+							"pm.sendRequest({",
+							"    url: 'https://qauto.forstudy.space/api/auth/signout',",
+							"    method: 'GET',",
+							"    header: 'Content-Type:application/json',",
+							"}, function (logoutErr, logoutRes) {",
+							"    if (logoutErr) {",
+							"        console.error(\"Ошибка при выходе:\", logoutErr);",
+							"    } else {",
+							"        console.log(\"Пользователь успешно вышел из системы\");",
+							"",
+							"        // Задержка в 1 секунду перед выполнением второго запроса на вход",
+							"        setTimeout(function() {",
+							"            postman.setNextRequest(\"Второй запрос\");",
+							"        }, 1000);",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.sendRequest({",
+							"    url: 'https://qauto.forstudy.space/api/auth/signout',",
+							"    method: 'GET',",
+							"    header: 'Content-Type:application/json',",
+							"}, function (logoutErr, logoutRes) {",
+							"    if (logoutErr) {",
+							"        console.error(\"Ошибка при выходе:\", logoutErr);",
+							"    } else {",
+							"        console.log(\"Пользователь успешно вышел из системы\");",
+							"        // Задержка в 1 секунду перед выполнением следующего запроса",
+							"        setTimeout(function () {",
+							"            postman.setNextRequest(\"Второй запрос\");",
+							"        }, 1000);",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "https://qauto.forstudy.space/api/auth/logout"
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "https://qauto.forstudy.space/api/users"
+			},
+			"response": []
+		}
+	]
+}
